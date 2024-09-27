@@ -1,6 +1,6 @@
 import importlib
 from datetime import datetime
-
+import torch
 
 class TensorboardWriter():
     def __init__(self, log_dir, logger, enabled):
@@ -62,7 +62,9 @@ class TensorboardWriter():
                     # add mode(train/valid) tag
                     if name not in self.tag_mode_exceptions:
                         tag = '{}/{}'.format(tag, self.mode)
-                    add_data(tag, data, self.step, *args, **kwargs)
+                    # print('tag',tag,' data ', data,' step ', self.step, ' etc ', args, kwargs)
+                    if  not torch.is_tensor(data) or  data.numel():
+                        add_data(tag, data, self.step, *args, **kwargs)
             return wrapper
         else:
             # default action for returning methods defined in this class, set_step() for instance.

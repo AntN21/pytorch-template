@@ -4,13 +4,14 @@ import torch
 def accuracy(output, target):
     with torch.no_grad():
         pred = torch.argmax(output, dim=1)
+        # print(pred.shape,target.shape)
         assert pred.shape[0] == len(target)
         correct = 0
         correct += torch.sum(pred == target).item()
     return correct / len(target)
 
 
-def top_k_acc(output, target, k=3):
+def top_k_acc(output, target, k=2):
     with torch.no_grad():
         pred = torch.topk(output, k, dim=1)[1]
         assert pred.shape[0] == len(target)

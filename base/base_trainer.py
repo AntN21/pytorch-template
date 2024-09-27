@@ -58,8 +58,10 @@ class BaseTrainer:
         """
         Full training logic
         """
+        
         not_improved_count = 0
         for epoch in range(self.start_epoch, self.epochs + 1):
+            torch.cuda.empty_cache()
             result = self._train_epoch(epoch)
 
             # save logged informations into log dict
@@ -85,6 +87,7 @@ class BaseTrainer:
 
                 if improved:
                     self.mnt_best = log[self.mnt_metric]
+                    self.best_log = log
                     not_improved_count = 0
                     best = True
                 else:
@@ -97,7 +100,9 @@ class BaseTrainer:
 
             if epoch % self.save_period == 0:
                 self._save_checkpoint(epoch, save_best=best)
-
+        print(best)
+        return self.best_log
+    
     def _save_checkpoint(self, epoch, save_best=False):
         """
         Saving checkpoints
@@ -106,6 +111,7 @@ class BaseTrainer:
         :param log: logging information of the epoch
         :param save_best: if True, rename the saved checkpoint to 'model_best.pth'
         """
+        # return
         arch = type(self.model).__name__
         state = {
             'arch': arch,

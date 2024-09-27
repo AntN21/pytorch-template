@@ -9,7 +9,7 @@ from utils import read_json, write_json
 
 
 class ConfigParser:
-    def __init__(self, config, resume=None, modification=None, run_id=None):
+    def __init__(self, config, resume=None, modification=None, exp_id=None, run_id = None):
         """
         class to parse configuration json file. Handles hyperparameters for training, initializations of modules, checkpoint saving
         and logging module.
@@ -20,12 +20,26 @@ class ConfigParser:
         """
         # load config file and apply modification
         self._config = _update_config(config, modification)
+        self._config['id'] = exp_id
         self.resume = resume
 
         # set save_dir where trained model and log will be saved.
         save_dir = Path(self.config['trainer']['save_dir'])
 
-        exper_name = self.config['name']
+        # def get_expe_name(config):
+        #     return config['id']
+        #     def str_dict(dictionnary):
+        #         res = ''
+        #         good_keys = ["additional_feature_names", "features_duration", "ecg_duration", "hrv_duration",
+        #                      'use_ecg_time_series','use_hrv_time_series','use_features','use_transformer']
+        #         for key,value in dictionnary.items():
+        #             if key in good_keys:
+        #                 res+=f'{key}={value}_'
+        #         return res
+            
+        #     return str_dict(config['arch']['args']) + str_dict(config['data_loader']['args'])[:-1]
+        
+        exper_name = f"{self.config['name']}/{exp_id}"
         if run_id is None: # use timestamp as default run-id
             run_id = datetime.now().strftime(r'%m%d_%H%M%S')
         self._save_dir = save_dir / 'models' / exper_name / run_id
@@ -72,10 +86,11 @@ class ConfigParser:
         if args.config and resume:
             # update new config for fine-tuning
             config.update(read_json(args.config))
-
+        
+        
         # parse custom cli options into dictionary
         modification = {opt.target : getattr(args, _get_opt_name(opt.flags)) for opt in options}
-        return cls(config, resume, modification)
+        return cls(config, resume, modification, exp_id = args.exp)
 
     def init_obj(self, name, module, *args, **kwargs):
         """
