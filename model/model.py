@@ -419,13 +419,13 @@ class MyModel(BaseModel):
 
         mlp_input_size = 0
 
-        if use_ecg_time_series:
+        if use_hrv_time_series:
             self.hrv_conv = ConvNet()
             mlp_input_size += 32
         else:
             self.hrv_conv = Empty()
 
-        if use_hrv_time_series:
+        if use_ecg_time_series:
             self.ecg_conv = ConvNet()
             mlp_input_size += 32
         else:
