@@ -1,0 +1,55 @@
+{
+    "name": "PTB",
+    "n_gpu": 1,
+
+    "arch": {
+        "type": "PTBModel",
+        "args": {
+            
+        }
+    },
+    "data_loader": {
+        "type": "PTBDataLoader",
+        "args":{
+            "data_dir": "data//ptb-xl-torch",
+            "batch_size": 32,
+            "shuffle": true,
+            "validation_split": 0.2,
+            "num_workers": 2
+        }
+    },
+    "optimizer": {
+        "type": "Adam",
+        "args":{
+            "lr": 1e-3,
+            "amsgrad": true
+        }
+    },
+    "loss": "bce_logits_loss",
+    "metrics": [
+        "multilabel_accuracy","multilabel_recall"
+    ],
+    "lr_scheduler": {
+        "type": "StepLR",
+        "args": {
+            "step_size": 50,
+            "gamma": 0.9
+        }
+    },
+    "trainer": {
+        "epochs": 50,
+
+        "save_dir": "saved/",
+        "save_period": 10,
+        "verbosity": 2,
+        
+        "monitor": "min val_loss",
+        "early_stop": 30,
+
+        "tensorboard": true
+    },
+    "log_result":[
+        "val_multilabel_accuracy","val_loss"
+    ]
+    
+}

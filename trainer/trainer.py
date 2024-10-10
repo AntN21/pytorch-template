@@ -15,8 +15,11 @@ def move_to_device(data_dict, device):
     Returns:
         dict: Dictionary with tensors moved to the specified device.
     """
-    return {key: value.to(device) if isinstance(value, torch.Tensor) else value for key, value in data_dict.items()}
-
+    if isinstance(data_dict,dict):
+        return {key: value.to(device) if isinstance(value, torch.Tensor) else value for key, value in data_dict.items()}
+    else:
+        return data_dict.to(device)
+    
 class Trainer(BaseTrainer):
     """
     Trainer class
@@ -56,7 +59,7 @@ class Trainer(BaseTrainer):
             
         for batch_idx, (data, target) in enumerate(self.data_loader):
             data, target = move_to_device(data,self.device), target.to(self.device)
-
+            # print(data.dtype)
             self.optimizer.zero_grad()
             output = self.model(data)
             loss = self.criterion(output, target)

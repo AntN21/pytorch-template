@@ -11,7 +11,10 @@
 # from typing import Tuple
 import itertools
 
-def get_experiment_config(config, exp: int) -> dict:
+def get_my_experiment_config(config, exp: int) -> dict:
+    """
+    Return a experiment configuration
+    """
     
     # config["id"] = exp
 
@@ -29,7 +32,7 @@ def get_experiment_config(config, exp: int) -> dict:
     # Remove None values to get proper subsets
     subsets = [[e for e in subset if e is not None] for subset in subsets]
 
-    option6 =['newmultifracs', 'shannon_encoding','autoreg'] , # 1 possibility #subsets      # 8 possibilities
+    option6 = ['newmultifracs', 'shannon_encoding','autoreg'] , # 1 possibility #subsets      # 8 possibilities
 
     all_combinations = list(itertools.product(option1, option2, option3, option4, option5, option6))
     filtered_combinations = []
@@ -60,6 +63,35 @@ def get_experiment_config(config, exp: int) -> dict:
                 ")
     return config
 
+def get_ptb_experiment_config(config, exp: int):
+    """
+    Return an experiement configuration.
+    """
+    assert (exp >= 0) and (exp < 17) 
+    leads = []
+    if exp == 0:
+        leads = list(range(12))
+    elif exp == 1:
+        leads = list(range(3))
+    elif exp == 2:
+        leads = list(range(3,6))
+    elif exp == 3:
+        leads = list(range(6,9))
+    elif exp == 4:
+        leads = list(range(9,12))
+    else:
+        leads = [exp - 5]
+    
+    config['data_loader']['args']['lead'] = leads
+    config['arch']['args']['in_channels'] = len(leads)
+    return config
+
+def get_experiment_config(config, exp: int):
+    if config['name'] == 'MyTraining':
+        config = get_my_experiment_config(config, exp)
+    elif config['name'] == 'PTB':
+        config = get_ptb_experiment_config(config, exp)
+    return config
 
 # def get_training_content(config: dict, device="cuda") -> Tuple[ConvModel, torch.optim.Optimizer, dict]:
 #     model = ConvModel(1, **config[MODEL][ARCHITECTURE])

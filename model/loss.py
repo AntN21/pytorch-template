@@ -8,3 +8,6 @@ def cross_entropy(output, target, weight = None):
 
 def nll_loss(output, target):
     return F.nll_loss(output, target)
+
+bce_logits_loss = torch.nn.BCELoss()
+bce_logits_loss = torch.nn.BCEWithLogitsLoss()

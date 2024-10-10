@@ -80,9 +80,12 @@ def main(config):
     # for data, label in data_loader:
     #     print(data)
     # print(config.__dict__)
-    config['arch']['args']['feature_size'] = data_loader.dataset.get_feature_size()
-    config['arch']['args']['num_classes'] = data_loader.dataset.get_num_classes()
-
+    print(config["name"])
+    if config["name"] == "MyTraining":
+        config['arch']['args']['feature_size'] = data_loader.dataset.get_feature_size()
+        config['arch']['args']['num_classes'] = data_loader.dataset.get_num_classes()
+    else:
+        config['arch']['args']['num_classes'] = 5
     
     # build model architecture, then print to console
     model = config.init_obj('arch', module_arch)
