@@ -1,18 +1,18 @@
 {
-    "name": "PTB",
+    "name": "HRV",
     "n_gpu": 1,
 
     "arch": {
-        "type": "PTBModel",
+        "type": "MyModel",
         "args": {
             
         }
     },
     "data_loader": {
-        "type": "PTBDataLoader",
+        "type": "HRVDataLoader",
         "args":{
-            "data_dir": "data//ptb-xl-torch",
-            "batch_size": 32,
+            "data_dir": "data/data_patient_long_hrv_new_feats",
+            "batch_size": 16,
             "shuffle": true,
             "validation_split": 0.2,
             "num_workers": 2
@@ -25,9 +25,9 @@
             "amsgrad": true
         }
     },
-    "loss": "bce_logits_loss",
+    "loss": "cross_entropy",
     "metrics": [
-        "multilabel_accuracy","multilabel_recall"
+        "accuracy", "top_k_acc"
     ],
     "lr_scheduler": {
         "type": "StepLR",
@@ -37,19 +37,15 @@
         }
     },
     "trainer": {
-        "epochs": 70,
+        "epochs": 50,
 
         "save_dir": "saved/",
-        "save_period": 50,
+        "save_period": 10,
         "verbosity": 2,
         
         "monitor": "min val_loss",
         "early_stop": 30,
 
         "tensorboard": true
-    },
-    "log_result":[
-        "val_multilabel_accuracy","val_loss"
-    ]
-    
+    }
 }

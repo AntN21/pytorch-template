@@ -12,7 +12,7 @@
         "type": "MyDataLoader",
         "args":{
             "data_dir": "data/data_patient",
-            "batch_size": 32,
+            "batch_size": 16,
             "shuffle": true,
             "validation_split": 0.2,
             "num_workers": 2
@@ -37,7 +37,7 @@
         }
     },
     "trainer": {
-        "epochs": 600,
+        "epochs": 50,
 
         "save_dir": "saved/",
         "save_period": 10,

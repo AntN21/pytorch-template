@@ -8,8 +8,8 @@ from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
 import numpy as np
 
-class PatientDataset(Dataset):
-    def __init__(self, individuals_data, additional_feature_names = [], features_duration = '5m', ecg_duration = "30s", hrv_duration = "1h"):
+class PatientHRVDataset(Dataset):
+    def __init__(self, individuals_data, additional_feature_names = [], features_duration = '5m', hrv_duration = "1h"):
         """
         Args:
             individuals_data (list): A list of IndividualData objects.
@@ -27,7 +27,7 @@ class PatientDataset(Dataset):
         for individual in individuals_data:
             # print(individual["additional_features"][features_duration].keys())
             for i in range(len(individual["hrv_time_series"][hrv_duration])):
-                self.ecg_time_series.append(individual["ecg_time_series"][ecg_duration][i,:])
+                # self.ecg_time_series.append(individual["ecg_time_series"][ecg_duration][i,:])
                 self.hrv_time_series.append(individual["hrv_time_series"][hrv_duration][i])
                 features = [individual["features"][features_duration][i,:-1]]
                 for add_feature_name in additional_feature_names:
@@ -48,6 +48,11 @@ class PatientDataset(Dataset):
         self.pad_hrv()
         self.to_tensor()
         self.compute_normalizers()
+        
+        print(self.hrv_time_series.shape)
+        print(self.features.shape)
+        print(self.labels.shape)
+        print(self.ids.shape)
         # self.print_feature_size()
         self.data_length = self.hrv_time_series.shape[0]
 
@@ -67,14 +72,14 @@ class PatientDataset(Dataset):
 
         # Convert the individual's data to a dictionary
 
-        features = ( self.features[idx] - self.features_mean) / self.features_std
-        ecg_time_series = (self.ecg_time_series[idx,:]- self.ecg_mean) / self.ecg_std
+        features = ( self.features[idx] - self.features_mean) / self.fesatures_std
+        # ecg_time_series = (self.ecg_time_series[idx,:]- self.ecg_mean) / self.ecg_std
         hrv_time_series = (self.hrv_time_series[idx,:] - self.hrv_mean) / self.hrv_std
         return {
             'id': self.ids[idx],
             'features': features, #.to(self.device),
             # 'sample_weight':torch.FloatTensor([individual.sample_weight]),
-            'ecg_time_series': ecg_time_series.unsqueeze(0), #.to(self.device),
+            'ecg_time_series': torch.empty((1,1)), #.to(self.device),
             'hrv_time_series': hrv_time_series.unsqueeze(0), #.to(self.device),
             # 'label':  self.labels[idx].to(self.device),
             #'hrv_features' : individual.hrv_features,
@@ -106,8 +111,8 @@ class PatientDataset(Dataset):
         """
         
             
-        self.ecg_mean = torch.mean(self.ecg_time_series)
-        self.ecg_std = torch.std(self.ecg_time_series)
+        # self.ecg_mean = torch.mean(self.ecg_time_series)
+        # self.ecg_std = torch.std(self.ecg_time_series)
         self.hrv_mean = torch.mean(self.hrv_time_series)
         self.hrv_std = torch.std(self.hrv_time_series)
         self.features_mean = torch.mean(self.features, dim=0)
@@ -142,7 +147,7 @@ class PatientDataset(Dataset):
     
     def to_tensor(self):
         
-        self.ecg_time_series = torch.FloatTensor(self.ecg_time_series)
+        # self.ecg_time_series = torch.FloatTensor(self.ecg_time_series)
         self.hrv_time_series = torch.FloatTensor(self.hrv_time_series)
         self.features = torch.FloatTensor(self.features)
         self.labels = torch.LongTensor(self.labels)
@@ -179,12 +184,12 @@ class PatientDataset(Dataset):
 
 #     torch.save(dataset,os.path.join(config.DATA_DIR,f'dataset_ecg_{ecg_duration}_hrv_{hrv_duration}_feats_{features_duration}.pth'))
 
-class MyDataLoader(BaseDataLoader):
+class HRVDataLoader(BaseDataLoader):
     """
     data loading using BaseDataLoader
     """
     def __init__(self, data_dir, batch_size, shuffle=True, validation_split=0.0, num_workers=1, training=True,
-                  additional_feature_names = [], features_duration = '5m', ecg_duration = "30s", hrv_duration = "5m",
+                  additional_feature_names = [], features_duration = '5m',hrv_duration = "5m",
                   seed = None):
         # trsfm = transforms.Compose([
         #     transforms.ToTensor(),
@@ -200,10 +205,9 @@ class MyDataLoader(BaseDataLoader):
         else:
             individuals_data = torch.load(self.data_dir) 
         # self.validation_split = validation_split
-        self.dataset = PatientDataset(individuals_data=individuals_data,
+        self.dataset = PatientHRVDataset(individuals_data=individuals_data,
                                       additional_feature_names=additional_feature_names,
                                       features_duration=features_duration,
-                                      ecg_duration=ecg_duration,
                                       hrv_duration=hrv_duration)
         
         super().__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)

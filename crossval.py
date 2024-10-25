@@ -128,7 +128,7 @@ def main(config):
         #     print(data)
         # print(config.__dict__)
         
-        if config["name"] == "MyTraining":
+        if config["name"] == "MyTraining" or 'HRV':
             config['arch']['args']['feature_size'] = data_loader.dataset.get_feature_size()
             config['arch']['args']['num_classes'] = data_loader.dataset.get_num_classes()
         else:
@@ -166,7 +166,7 @@ def main(config):
         best_logs.append(best_log)
 
     log_experiment(best_logs,config)
-    show_confusion_matrix(model, valid_data_loader, device=device)
+    # show_confusion_matrix(model, valid_data_loader, device=device)
 
 if __name__ == '__main__':
     args = argparse.ArgumentParser(description='PyTorch Template')

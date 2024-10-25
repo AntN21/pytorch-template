@@ -393,9 +393,9 @@ class AttentionClassifier(nn.Module):
 class MyModel(BaseModel):
     def __init__(self, num_classes = None,
                  feature_size = None,
-                 use_ecg_time_series=True,
-                 use_hrv_time_series=True,
-                 use_features=True,
+                 use_ecg_time_series=False,
+                 use_hrv_time_series=False,
+                 use_features=False,
                  use_transformer=False,
                  transformer_feature_size=None,
                  transformer_T=None):

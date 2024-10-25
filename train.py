@@ -81,7 +81,7 @@ def main(config):
     #     print(data)
     # print(config.__dict__)
     print(config["name"])
-    if config["name"] == "MyTraining":
+    if config["name"] == "MyTraining" or 'HRV':
         config['arch']['args']['feature_size'] = data_loader.dataset.get_feature_size()
         config['arch']['args']['num_classes'] = data_loader.dataset.get_num_classes()
     else:

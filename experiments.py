@@ -86,11 +86,63 @@ def get_ptb_experiment_config(config, exp: int):
     config['arch']['args']['in_channels'] = len(leads)
     return config
 
+def get_hrv_experiment_config(config, exp: int) -> dict:
+    """
+    Return a experiment configuration
+    """
+    
+    # config["id"] = exp
+
+    # Define possible values for each option
+    # option1 = [True,False]        # 2 possibilities
+    option2 = [True,False]         # 2 possibilities
+    option3 = [True,False]         # 2 possibilities
+    option4 = ['5m', '10m', '30m', '1h', '2h', '3h']      # 5 possibilities
+    
+
+    # Your list
+    elements = []# ['newmultifracs','shannon_encoding','autoreg']
+    # Use itertools.product to generate all combinations
+    subsets = [list(subset) for subset in itertools.product(*[[None, e] for e in elements])]
+    # Remove None values to get proper subsets
+    subsets = [[e for e in subset if e is not None] for subset in subsets]
+
+    option6 = [['newmultifracs']] #, 'shannon_encoding','autoreg'] , # 1 possibility #subsets      # 8 possibilities
+
+    all_combinations = list(itertools.product( option2, option3, option4, option6))
+    filtered_combinations = []
+    for comb in all_combinations:
+        # print(comb)
+        if comb[3] in ['30s','1m','2m'] and comb[2] and 'newmultifracs' in comb[5]:
+            continue
+        else:
+            filtered_combinations.append(comb)
+        
+    experiment_combination = filtered_combinations[exp]
+
+    # config['arch']['args']['use_ecg_time_series'] = experiment_combination[0]
+    config['arch']['args']['use_hrv_time_series'] =  experiment_combination[0]
+    config['arch']['args']['use_features'] = experiment_combination[1]
+    config['data_loader']['args']["features_duration"] = experiment_combination[2]
+    config['data_loader']['args']["hrv_duration"] = experiment_combination[2]
+    # config['data_loader']['args']["ecg_duration"] = experiment_combination[4]
+    config['data_loader']['args']["additional_feature_names"] = experiment_combination[3]
+
+    print(f"Experiment {exp} / {len(filtered_combinations)}:\n\
+                USE_HRV: {experiment_combination[0]}\n\
+                USE_FEATURES: {experiment_combination[1]}\n\
+                HRV_DURATION: {experiment_combination[2]}\n\
+                ADDITIONAL_FEATURES: {experiment_combination[3]}\
+                ")
+    return config
+
 def get_experiment_config(config, exp: int):
     if config['name'] == 'MyTraining':
         config = get_my_experiment_config(config, exp)
     elif config['name'] == 'PTB':
         config = get_ptb_experiment_config(config, exp)
+    elif config['name'] == 'HRV':
+        config = get_hrv_experiment_config(config, exp)
     return config
 
 # def get_training_content(config: dict, device="cuda") -> Tuple[ConvModel, torch.optim.Optimizer, dict]:
