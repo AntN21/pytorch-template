@@ -72,7 +72,7 @@ class PatientHRVDataset(Dataset):
 
         # Convert the individual's data to a dictionary
 
-        features = ( self.features[idx] - self.features_mean) / self.fesatures_std
+        features = ( self.features[idx] - self.features_mean) / self.features_std
         # ecg_time_series = (self.ecg_time_series[idx,:]- self.ecg_mean) / self.ecg_std
         hrv_time_series = (self.hrv_time_series[idx,:] - self.hrv_mean) / self.hrv_std
         return {
