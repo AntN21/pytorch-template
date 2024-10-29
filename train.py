@@ -87,6 +87,8 @@ def main(config):
     else:
         config['arch']['args']['num_classes'] = 5
     
+    if config["name"] == "HRV":
+        config['data_loader']['args']["ecg_duration"] = 'null'
     # build model architecture, then print to console
     model = config.init_obj('arch', module_arch)
     logger.info(model)
