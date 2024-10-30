@@ -12,10 +12,10 @@
         "type": "MyDataLoader",
         "args":{
             "data_dir": "data/data_patient",
-            "batch_size": 16,
+            "batch_size": 8,
             "shuffle": true,
             "validation_split": 0.2,
-            "num_workers": 2
+            "num_workers": 8
         }
     },
     "optimizer": {
@@ -37,14 +37,14 @@
         }
     },
     "trainer": {
-        "epochs": 50,
+        "epochs": 70,
 
         "save_dir": "saved/",
         "save_period": 10,
         "verbosity": 2,
         
         "monitor": "min val_loss",
-        "early_stop": 30,
+        "early_stop": 20,
 
         "tensorboard": true
     }

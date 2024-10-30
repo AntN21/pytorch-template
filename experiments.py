@@ -32,7 +32,7 @@ def get_my_experiment_config(config, exp: int) -> dict:
     # Remove None values to get proper subsets
     subsets = [[e for e in subset if e is not None] for subset in subsets]
 
-    option6 = ['newmultifracs', 'shannon_encoding','autoreg'] , # 1 possibility #subsets      # 8 possibilities
+    option6 = [[]] #['newmultifracs', 'shannon_encoding','autoreg'] , # 1 possibility #subsets      # 8 possibilities
 
     all_combinations = list(itertools.product(option1, option2, option3, option4, option5, option6))
     filtered_combinations = []
@@ -120,12 +120,14 @@ def get_hrv_experiment_config(config, exp: int) -> dict:
         
     experiment_combination = filtered_combinations[exp]
 
-    # config['arch']['args']['use_ecg_time_series'] = experiment_combination[0]
+    config['arch']['args']['use_ecg_time_series'] = False
+    # config['data_loader']['args']["ecg_duration"] = 'null'
+
     config['arch']['args']['use_hrv_time_series'] =  experiment_combination[0]
     config['arch']['args']['use_features'] = experiment_combination[1]
     config['data_loader']['args']["features_duration"] = experiment_combination[2]
     config['data_loader']['args']["hrv_duration"] = experiment_combination[2]
-    # config['data_loader']['args']["ecg_duration"] = experiment_combination[4]
+    
     config['data_loader']['args']["additional_feature_names"] = experiment_combination[3]
 
     print(f"Experiment {exp} / {len(filtered_combinations)}:\n\
